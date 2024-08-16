@@ -4,7 +4,7 @@ export const mockData = {
     title: "Nhóm 8",
     description: "Pro MERN stack Course",
     type: "public",
-    columns: [],
+    columns: []
   },
-  users: [],
-};
+  users: []
+}
