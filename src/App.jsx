@@ -1,5 +1,4 @@
-import Board from '~/pages/Boards/_id'
-
+import Board from "~/pages/Boards/_id";
 
 function App() {
   return (
@@ -8,7 +7,7 @@ function App() {
       {/* Board Details */}
       <Board />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
