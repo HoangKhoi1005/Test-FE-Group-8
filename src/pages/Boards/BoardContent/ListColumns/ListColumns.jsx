@@ -1,20 +1,28 @@
-import Box from "@mui/material/Box"
-import Column from "./Column/Column"
-import Button from "@mui/material/Button"
-import NoteAddIcon from "@mui/icons-material/NoteAdd"
-import { useState } from "react"
-import styled from "styled-components"
+import Box from "@mui/material/Box";
+import Column from "./Column/Column";
+import Button from "@mui/material/Button";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
+import { useState } from "react";
+import styled from "styled-components";
+import { useAuth } from "~/pages/Auth/index";
 
 function ListColumns({ columns }) {
-  const columnPairs = []
+  const columnPairs = [];
   for (let i = 0; i < columns?.length; i += 2) {
-    columnPairs.push(columns.slice(i, i + 2))
+    columnPairs.push(columns.slice(i, i + 2));
   }
 
+  // const storedUser = localStorage.getItem("loggedInUser");
+  // if (storedUser) {
+  //   setLoggedInUser(JSON.parse(storedUser));
+  // }
+
+  const { auth } = useAuth();
+
   const [newQuestion, setNewQuestion] = useState([
-    { _id: "", userId: "", questions: "", likes: 0, answers: [] }
-  ])
-  const [addQuestion, setAddQuestion] = useState(false)
+    { _id: "", userId: "", questions: "", likes: 0, answers: [] },
+  ]);
+  const [addQuestion, setAddQuestion] = useState(false);
 
   const transformQuestionData = (question) => {
     return {
@@ -22,21 +30,20 @@ function ListColumns({ columns }) {
       like: question.likes,
       answers: question.answers,
       id: question._id.replace("id-", ""),
-      accountId: question.userId
-    }
-  }
+      accountId: question.userId,
+    };
+  };
   const handleAddQuestion = async () => {
-    const newQ = document.getElementById("ask").value
-    console.log("Câu hỏi: ", newQ)
+    const newQ = document.getElementById("ask").value;
     const questionToAdd = {
       _id: `id-${columns?.length + 1}`,
-      userId: "3",
+      userId: auth.id,
       questions: newQ,
       likes: 0,
-      answers: []
-    }
+      answers: [],
+    };
 
-    const transformedQuestion = transformQuestionData(questionToAdd)
+    const transformedQuestion = transformQuestionData(questionToAdd);
 
     try {
       const response = await fetch(
@@ -44,28 +51,27 @@ function ListColumns({ columns }) {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(transformedQuestion)
+          body: JSON.stringify(transformedQuestion),
         }
-      )
+      );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok")
+        throw new Error("Network response was not ok");
       }
 
-      const data = await response.json()
-      console.log("New question added:", data)
+      const data = await response.json();
 
       setNewQuestion([
-        { _id: "", userId: "", questions: "", likes: 0, answers: [] }
-      ])
-      setAddQuestion(!addQuestion)
+        { _id: "", userId: "", questions: "", likes: 0, answers: [] },
+      ]);
+      setAddQuestion(!addQuestion);
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error)
+      console.error("There was a problem with the fetch operation:", error);
     }
-    window.location.reload()
-  }
+    window.location.reload();
+  };
 
   return (
     <Box>
@@ -77,7 +83,7 @@ function ListColumns({ columns }) {
           display: "flex",
           overflowX: "auto",
           overflowY: "hidden",
-          "&::-webkit-scrollbar-track": { margin: 2 }
+          "&::-webkit-scrollbar-track": { margin: 2 },
         }}
       >
         {columnPairs?.map((pair, pairIndex) => (
@@ -88,7 +94,7 @@ function ListColumns({ columns }) {
               flexDirection: "column",
               minWidth: "300px",
               maxWidth: "200px",
-              mx: 2
+              mx: 2,
             }}
           >
             {pair.map((column) => (
@@ -105,7 +111,7 @@ function ListColumns({ columns }) {
             mx: 2,
             borderRadius: "6px",
             height: "fit-content",
-            backgroundColor: "#ffffff3d"
+            backgroundColor: "#ffffff3d",
           }}
         >
           <Button
@@ -115,10 +121,10 @@ function ListColumns({ columns }) {
               width: "100%",
               justifyContent: "flex-start",
               paddingLeft: 2.5,
-              py: 1
+              py: 1,
             }}
             onClick={() => {
-              setAddQuestion(!addQuestion)
+              setAddQuestion(!addQuestion);
             }}
           >
             Add New Questions
@@ -138,7 +144,7 @@ function ListColumns({ columns }) {
         </FormAddQuestion>
       )}
     </Box>
-  )
+  );
 }
 
 const SubmitQuestion = styled.button`
@@ -171,7 +177,7 @@ const SubmitQuestion = styled.button`
     outline: none;
     box-shadow: 0px 0px 0px 4px rgba(0, 123, 255, 0.5);
   }
-`
+`;
 
 const MainForm = styled.textarea`
   display: block;
@@ -181,7 +187,7 @@ const MainForm = styled.textarea`
   border-radius: 8px;
   margin: 20px 0;
   padding: 12px;
-  font-family: 'Arial', Helvetica, sans-serif;
+  font-family: "Arial", Helvetica, sans-serif;
   font-size: 1rem;
   font-weight: 400;
   border: 1px solid #ccc;
@@ -193,7 +199,7 @@ const MainForm = styled.textarea`
     box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
     outline: none;
   }
-`
+`;
 
 const TopForm = styled.button`
   background-color: transparent;
@@ -213,7 +219,7 @@ const TopForm = styled.button`
   &:active {
     outline: none;
   }
-`
+`;
 
 const FormOverlay = styled.div`
   position: fixed;
@@ -224,7 +230,7 @@ const FormOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   z-index: 900;
-`
+`;
 
 const FormAddQuestion = styled.div`
   position: fixed;
@@ -249,7 +255,6 @@ const FormAddQuestion = styled.div`
     visibility: hidden;
     transform: translate(-50%, -40%);
   }
-`
+`;
 
-
-export default ListColumns
+export default ListColumns;
