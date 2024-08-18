@@ -1,31 +1,21 @@
-import React, { useState, useEffect } from "react";
-import Container from "@mui/material/Container";
-import AppBar from "~/components/AppBar/AppBar";
-import BoardBar from "./BoardBar/BoardBar";
-import BoardContent from "./BoardContent/BoardContent";
-import { mockData as initialMockData } from "~/apis/mock-data";
-import Footer from "~/components/Footer/Footer";
-import axios from "axios";
+import { useState, useEffect } from "react"
+import Container from "@mui/material/Container"
+import AppBar from "~/components/AppBar/AppBar"
+import BoardBar from "./BoardBar/BoardBar"
+import BoardContent from "./BoardContent/BoardContent"
+import { mockData as initialMockData } from "~/apis/mock-data"
+import Footer from "~/components/Footer/Footer"
+import axios from "axios"
 
 const getAPI = () => {
   return axios
     .get("https://66be10c274dfc195586e78a9.mockapi.io/api/questions")
     .then((response) => response.data)
     .catch((error) => {
-      console.error(error);
-      return [];
-    });
-};
-
-const getAPI2 = () => {
-  return axios
-    .get("https://66be10c274dfc195586e78a9.mockapi.io/api/accounts")
-    .then((response) => response.data)
-    .catch((error) => {
-      console.error(error);
-      return [];
-    });
-};
+      console.error(error)
+      return []
+    })
+}
 
 const transformData = (data) => {
   return data.map((item) => ({
@@ -36,41 +26,44 @@ const transformData = (data) => {
     answers: item.answers.map((answer) => ({
       adminId: answer.name,
       answer: answer.answer,
-      userName: answer.name,
-    })),
-  }));
-};
+      userName: answer.name
+    }))
+  }))
+}
 
 function Board() {
-  const [board, setBoard] = useState(initialMockData.board);
-  const [users, setUsers] = useState(initialMockData.users);
+  const [board, setBoard] = useState(initialMockData.board)
+  const [loggedInUser, setLoggedInUser] = useState(null)
 
   useEffect(() => {
     const updateMockData = async () => {
       try {
-        const questionsData = await getAPI();
-        const accountsData = await getAPI2();
+        const questionsData = await getAPI()
         setBoard((prevBoard) => ({
           ...prevBoard,
-          columns: transformData(questionsData),
-        }));
-        setUsers(accountsData);
+          columns: transformData(questionsData)
+        }))
       } catch (error) {
-        console.error("Error updating mock data:", error);
+        console.error("Error updating mock data:", error)
       }
-    };
+    }
 
-    updateMockData();
-  }, []);
+    const storedUser = localStorage.getItem("loggedInUser")
+    if (storedUser) {
+      setLoggedInUser(JSON.parse(storedUser))
+    }
+
+    updateMockData()
+  }, [])
 
   return (
     <Container disableGutters maxWidth={false} sx={{ height: "100vh" }}>
-      <AppBar users={users} />
-      <BoardBar board={board} users={users} />
-      <BoardContent board={board} users={users} />
+      <AppBar loggedInUser={loggedInUser} />
+      <BoardBar board={board} loggedInUser={loggedInUser} />
+      <BoardContent board={board} loggedInUser={loggedInUser} />
       <Footer />
     </Container>
-  );
+  )
 }
 
-export default Board;
+export default Board

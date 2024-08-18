@@ -1,11 +1,11 @@
-import AddCardIcon from "@mui/icons-material/AddCard";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import Tooltip from "@mui/material/Tooltip";
-import Typography from "@mui/material/Typography";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import EditIcon from "@mui/icons-material/Edit";
+import AddCardIcon from "@mui/icons-material/AddCard"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
+import Tooltip from "@mui/material/Tooltip"
+import Typography from "@mui/material/Typography"
+import FavoriteIcon from "@mui/icons-material/Favorite"
+import EditIcon from "@mui/icons-material/Edit"
 
 function Column({ column }) {
   return (
@@ -18,7 +18,7 @@ function Column({ column }) {
         ml: 2,
         borderRadius: "6px",
         height: "fit-content",
-        mb: 2,
+        mb: 2
       }}
     >
       {/* Box Card Header */}
@@ -27,7 +27,7 @@ function Column({ column }) {
           padding: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "space-between"
         }}
       >
         <Typography
@@ -35,7 +35,7 @@ function Column({ column }) {
           sx={{
             fontSize: "1rem",
             fontWeight: "bold",
-            cursor: "pointer",
+            cursor: "pointer"
           }}
         >
           {column?.questions}
@@ -45,7 +45,7 @@ function Column({ column }) {
                 color: "#95a5a6",
                 cursor: "pointer",
                 fontSize: "large",
-                ml: 1,
+                ml: 1
               }}
             />
           </Tooltip>
@@ -84,7 +84,7 @@ function Column({ column }) {
           padding: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "space-between"
         }}
       >
         <Button startIcon={<AddCardIcon />}>Add new answer</Button>
@@ -103,7 +103,7 @@ function Column({ column }) {
         </Box>
       </Box>
     </Box>
-  );
+  )
 }
 
-export default Column;
+export default Column

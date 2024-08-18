@@ -64,6 +64,7 @@ function ListColumns({ columns }) {
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error)
     }
+    window.location.reload()
   }
 
   return (
@@ -124,9 +125,10 @@ function ListColumns({ columns }) {
           </Button>
         </Box>
       </Box>
+      {addQuestion && <FormOverlay onClick={() => setAddQuestion(false)} />}
       {addQuestion && (
         <FormAddQuestion>
-          <TopForm onClick={() => setAddQuestion(!addQuestion)}>
+          <TopForm onClick={() => setAddQuestion(false)}>
             <b>X</b>
           </TopForm>
           <MainForm placeholder="Question?" id="ask"></MainForm>
@@ -141,61 +143,87 @@ function ListColumns({ columns }) {
 
 const SubmitQuestion = styled.button`
   cursor: pointer;
-  float: right;
   position: fixed;
   background-color: #007bff;
   color: #fff;
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 500;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   bottom: 2%;
   right: 2%;
   line-height: 1.5;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
   &:hover {
     background-color: #0056b3;
-    border-color: #004085;
-    color: #fff;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
   }
 
   &:focus,
   &:active {
     outline: none;
-    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+    box-shadow: 0px 0px 0px 4px rgba(0, 123, 255, 0.5);
   }
 `
 
 const MainForm = styled.textarea`
   display: block;
-  min-width: 50px;
-  max-width: 500px;
   width: 100%;
-  min-height: 25px;
-  max-height: 63px;
-  height: 100%;
-  border-radius: 5px;
-  margin: 20px 10px 20px 10px;
-  padding: 10px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 300;
+  min-height: 80px;
+  max-height: 150px;
+  border-radius: 8px;
+  margin: 20px 0;
+  padding: 12px;
+  font-family: 'Arial', Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  resize: vertical;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:focus {
+    border-color: #007bff;
+    box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }
 `
 
 const TopForm = styled.button`
   background-color: transparent;
-  display: block;
   border: none;
-  color: red;
-  float: right;
+  color: #dc3545;
+  font-size: 1.25rem;
+  font-weight: bold;
   cursor: pointer;
+  float: right;
+  transition: color 0.2s ease-in-out;
+
   &:hover {
-    color: yellow;
+    color: #ffc107;
   }
+
+  &:focus,
+  &:active {
+    outline: none;
+  }
+`
+
+const FormOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 900;
 `
 
 const FormAddQuestion = styled.div`
@@ -203,18 +231,25 @@ const FormAddQuestion = styled.div`
   display: block;
   top: 30%;
   left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  min-width: 250px;
-  max-width: 500px;
+  transform: translate(-50%, -30%);
+  z-index: 1000;
+  min-width: 300px;
+  max-width: 600px;
   width: 100%;
-  min-height: 150px;
-  max-height: 300px;
-  height: auto;
-  background-color: white;
-  padding: 16px;
-  border-radius: 10px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
   visibility: visible;
+
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -40%);
+  }
 `
+
 
 export default ListColumns

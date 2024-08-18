@@ -1,7 +1,6 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Board from "~/pages/Boards/_id";
-import Login from "~/pages/Login/Login";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import Board from "~/pages/Boards/_id"
+import Login from "~/pages/Login/Login"
 
 const App = () => {
   return (
@@ -11,7 +10,7 @@ const App = () => {
         <Route path="/" element={<Board />} />
       </Routes>
     </Router>
-  );
-};
+  )
+}
 
-export default App;
+export default App
