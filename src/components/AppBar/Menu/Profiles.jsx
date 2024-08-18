@@ -10,10 +10,18 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
+
+
 
 function Profiles() {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const open = Boolean(anchorEl)
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/login'); 
+  }  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
@@ -65,7 +73,7 @@ function Profiles() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

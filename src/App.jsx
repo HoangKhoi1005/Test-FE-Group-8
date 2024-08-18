@@ -1,13 +1,17 @@
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Board from "~/pages/Boards/_id";
+import Login from "~/pages/Login/Login";
 
-function App() {
+const App = () => {
   return (
-    <>
-      {/* React Router Dom /boards /boards/{board_id} */}
-      {/* Board Details */}
-      <Board />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/Login" element={<Login />} />
+        <Route path="/" element={<Board />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
