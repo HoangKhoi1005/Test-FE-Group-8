@@ -1,56 +1,49 @@
-import Logout from "@mui/icons-material/Logout";
-import PersonAdd from "@mui/icons-material/PersonAdd";
-import Settings from "@mui/icons-material/Settings";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Tooltip from "@mui/material/Tooltip";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import LoginIcon from "@mui/icons-material/Login";
-import { Snackbar, Alert } from "@mui/material";
-import { useAuth } from "~/pages/Auth/index";
+import Logout from "@mui/icons-material/Logout"
+import PersonAdd from "@mui/icons-material/PersonAdd"
+import Settings from "@mui/icons-material/Settings"
+import Avatar from "@mui/material/Avatar"
+import Box from "@mui/material/Box"
+import Divider from "@mui/material/Divider"
+import IconButton from "@mui/material/IconButton"
+import ListItemIcon from "@mui/material/ListItemIcon"
+import Menu from "@mui/material/Menu"
+import MenuItem from "@mui/material/MenuItem"
+import Tooltip from "@mui/material/Tooltip"
+import React from "react"
+import { useNavigate } from "react-router-dom"
+import LoginIcon from "@mui/icons-material/Login"
+import { Snackbar, Alert } from "@mui/material"
 
 function Profiles({ loggedInUser }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [logoutSnackbarOpen, setLogoutSnackbarOpen] = React.useState(false);
-  const open = Boolean(anchorEl);
-  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [logoutSnackbarOpen, setLogoutSnackbarOpen] = React.useState(false)
+  const open = Boolean(anchorEl)
+  const navigate = useNavigate()
 
-  const { setAuth } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("loggedInUser");
-    setAuth({
-      id: null,
-      userName: "",
-      role: "",
-    });
-    setLogoutSnackbarOpen(true);
-    handleClose();
-    window.location.reload();
-  };
+    localStorage.removeItem("loggedInUser")
+    setLogoutSnackbarOpen(true)
+    handleClose()
+    window.location.reload()
+  }
 
   const handleLogin = () => {
-    handleClose();
-    navigate("/login");
-  };
+    handleClose()
+    navigate("/login")
+  }
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleSnackbarClose = () => {
-    setLogoutSnackbarOpen(false);
-  };
+    setLogoutSnackbarOpen(false)
+  }
 
   return (
     <Box>
@@ -77,7 +70,7 @@ function Profiles({ loggedInUser }) {
         open={open}
         onClose={handleClose}
         MenuListProps={{
-          "aria-labelledby": "basic-button-profiles",
+          "aria-labelledby": "basic-button-profiles"
         }}
       >
         {loggedInUser ? (
@@ -130,7 +123,7 @@ function Profiles({ loggedInUser }) {
         </Alert>
       </Snackbar>
     </Box>
-  );
+  )
 }
 
-export default Profiles;
+export default Profiles

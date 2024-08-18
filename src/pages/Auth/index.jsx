@@ -1,22 +1,22 @@
 //Authentication - SignIn, SignUp, SignOut
 
 // Global useState for login
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react"
 
-const AuthContext = createContext();
+const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     id: null,
     userName: "",
-    role: "",
-  });
+    role: ""
+  })
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext)
