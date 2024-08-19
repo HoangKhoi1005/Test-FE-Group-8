@@ -8,8 +8,13 @@ import Typography from "@mui/material/Typography"
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import EditIcon from "@mui/icons-material/Edit"
 import styled from "styled-components"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import DialogTitle from "@mui/material/DialogTitle"
 
-function Column({ column, loggedInUser }) {
+function Column({ column, loggedInUser, onDeleteColumn }) {
   const [showForm, setShowForm] = useState(false)
   const [newAnswer, setNewAnswer] = useState("")
 
@@ -19,6 +24,16 @@ function Column({ column, loggedInUser }) {
 
   const handleCloseForm = () => {
     setShowForm(false)
+  }
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true)
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false)
   }
 
   const handleAddAnswer = async () => {
@@ -76,6 +91,32 @@ function Column({ column, loggedInUser }) {
     }
   }
 
+  const handleDeleteConfirm = async () => {
+    const questionId = column._id
+
+    try {
+      const response = await fetch(
+        `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+
+      console.log("Question deleted successfully")
+      onDeleteColumn(column._id) // Gọi hàm callback để cập nhật state ở component cha
+      handleCloseDeleteDialog()
+    } catch (error) {
+      console.error("There was a problem with the delete operation:", error)
+    }
+  }
+
 
   return (
     <Box
@@ -123,7 +164,7 @@ function Column({ column, loggedInUser }) {
           <Tooltip title="Delete">
             <DeleteOutlineIcon
               sx={{ color: "text.primary", cursor: "pointer" }}
-              id="basic-card-dropdown"
+              onClick={handleDeleteClick}
             />
           </Tooltip>
         </Box>
@@ -194,6 +235,27 @@ function Column({ column, loggedInUser }) {
           </FormAddQuestion>
         </>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Xác nhận xóa câu hỏi"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn có muốn xóa câu hỏi này không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Hủy</Button>
+          <Button onClick={handleDeleteConfirm} autoFocus>
+            Xác nhận xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
