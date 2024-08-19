@@ -2,13 +2,13 @@ import Chip from "@mui/material/Chip"
 import Box from "@mui/material/Box"
 import DashboardIcon from "@mui/icons-material/Dashboard"
 import VpnLockIcon from "@mui/icons-material/VpnLock"
-import AddToDriveIcon from "@mui/icons-material/AddToDrive"
 import Avatar from "@mui/material/Avatar"
 import AvatarGroup from "@mui/material/AvatarGroup"
 import { Tooltip } from "@mui/material"
 import Button from "@mui/material/Button"
 import PersonAddIcon from "@mui/icons-material/PersonAdd"
 import { capitalizeFirstLetter } from "~/utils/formatters"
+import SortOptions from "~/components/SortOptions/SortOptions"
 
 const MENU_STYLES = {
   color:"white",
@@ -24,7 +24,8 @@ const MENU_STYLES = {
   }
 }
 
-function BoardBar({ board }) {
+function BoardBar({ board, sortOption, setSortOption }) {
+
   return (
     <Box sx={{
       width: "100%",
@@ -50,12 +51,7 @@ function BoardBar({ board }) {
           label= {capitalizeFirstLetter(board?.type)}
           clickable
         />
-        <Chip
-          sx={MENU_STYLES}
-          icon={<AddToDriveIcon />}
-          label="Add To Google Drive"
-          clickable
-        />
+        <SortOptions sortOption={sortOption} setSortOption={setSortOption} />
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

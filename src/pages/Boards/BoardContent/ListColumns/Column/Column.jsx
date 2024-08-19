@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import AddCardIcon from "@mui/icons-material/AddCard"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
@@ -20,10 +20,20 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
   const [likes, setLikes] = useState(column.likes || 0)
   const [isLiked, setIsLiked] = useState(false)
 
+  useEffect(() => {
+    const savedLikeState = localStorage.getItem(`liked_${column._id}`)
+    if (savedLikeState === "true") {
+      setIsLiked(true)
+    }
+  }, [column._id])
+
   const handleLikeClick = async () => {
-    setIsLiked(!isLiked)
-    const updatedLikes = isLiked ? likes - 1 : likes + 1
+    const newIsLiked = !isLiked
+    setIsLiked(newIsLiked)
+    const updatedLikes = newIsLiked ? likes + 1 : likes - 1
     setLikes(updatedLikes)
+
+    localStorage.setItem(`liked_${column._id}`, newIsLiked.toString())
 
     try {
       const response = await fetch(
@@ -33,7 +43,7 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ likes: updatedLikes })
+          body: JSON.stringify({ like: updatedLikes })
         }
       )
 

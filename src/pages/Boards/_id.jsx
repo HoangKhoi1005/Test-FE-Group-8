@@ -60,11 +60,13 @@ function Board() {
   }, [storedUser])
 
 
+  const [sortOption, setSortOption] = useState("all")
+
   return (
     <Container disableGutters maxWidth={false} sx={{ height: "100vh" }}>
       <AppBar loggedInUser={loggedInUser} />
-      <BoardBar board={board} loggedInUser={loggedInUser} />
-      <BoardContent board={board} loggedInUser={loggedInUser} />
+      <BoardBar board={board} loggedInUser={loggedInUser} sortOption={sortOption} setSortOption={setSortOption} />
+      <BoardContent board={board} loggedInUser={loggedInUser} sortOption={sortOption} />
       <Footer />
     </Container>
   )

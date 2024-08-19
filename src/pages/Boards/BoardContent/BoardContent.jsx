@@ -2,14 +2,24 @@ import Box from "@mui/material/Box"
 import ListColumns from "./ListColumns/ListColumns"
 import { useEffect, useState } from "react"
 
-function BoardContent({ board, loggedInUser }) {
+function BoardContent({ board, loggedInUser, sortOption }) {
 
   const [columns, setColumns] = useState(board?.columns || [])
+
   useEffect(() => {
-    if (board?.columns) {
-      setColumns(board.columns)
+    const filterColumns = () => {
+      if (sortOption === "answered") {
+        return board?.columns.filter(col => col.answers.length > 0 && !col.isDelete)
+      } else if (sortOption === "unanswered") {
+        return board?.columns.filter(col => col.answers.length === 0 && !col.isDelete)
+      } else {
+        return board?.columns.filter(col => !col.isDelete)
+      }
     }
-  }, [board])
+
+    setColumns(filterColumns())
+  }, [sortOption, board?.columns])
+
 
   return (
     <Box
