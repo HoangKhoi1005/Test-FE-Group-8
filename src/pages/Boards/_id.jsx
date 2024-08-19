@@ -18,18 +18,21 @@ const getAPI = () => {
 }
 
 const transformData = (data) => {
-  return data.map((item) => ({
-    _id: `id-${item.id}`,
-    userId: item.accountId,
-    questions: item.questions,
-    likes: item.like,
-    answers: item.answers.map((answer) => ({
-      adminId: answer.name,
-      answer: answer.answer,
-      userName: answer.name
+  return data
+    .filter((item) => item.isDelete !== "true")
+    .map((item) => ({
+      _id: `id-${item.id}`,
+      userId: item.accountId,
+      questions: item.questions,
+      likes: item.like,
+      answers: item.answers.map((answer) => ({
+        adminId: answer.name,
+        answer: answer.answer,
+        userName: answer.name
+      }))
     }))
-  }))
 }
+
 
 function Board() {
   const [board, setBoard] = useState(initialMockData.board)

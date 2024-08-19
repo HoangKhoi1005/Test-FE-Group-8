@@ -17,6 +17,36 @@ import DialogTitle from "@mui/material/DialogTitle"
 function Column({ column, loggedInUser, onDeleteColumn }) {
   const [showForm, setShowForm] = useState(false)
   const [newAnswer, setNewAnswer] = useState("")
+  const [likes, setLikes] = useState(column.likes || 0)
+  const [isLiked, setIsLiked] = useState(false)
+
+  const handleLikeClick = async () => {
+    setIsLiked(!isLiked)
+    const updatedLikes = isLiked ? likes - 1 : likes + 1
+    setLikes(updatedLikes)
+
+    try {
+      const response = await fetch(
+        `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${column._id.replace("id-", "")}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ likes: updatedLikes })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok")
+      }
+
+      console.log("Likes updated:", updatedLikes)
+    } catch (error) {
+      console.error("There was a problem with the fetch operation:", error)
+    }
+  }
+
 
   const handleButtonClick = () => {
     setShowForm(true)
@@ -42,7 +72,6 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
       return
     }
 
-    // Đảm bảo sử dụng thuộc tính 'userName' cho tất cả các câu trả lời
     const answerToAdd = {
       name: loggedInUser.userName,
       answer: newAnswer
@@ -51,16 +80,15 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
     const questionId = column._id.replace("id-", "")
 
     try {
-      // Chuẩn hóa dữ liệu trước khi gửi đi, loại bỏ các thuộc tính không cần thiết
       const updatedColumn = {
         questions: column.questions,
         likes: column.likes,
         answers: [
           ...column.answers.map(answer => ({
-            name: answer.userName || answer.name || answer.adminId, // Ưu tiên sử dụng 'userName'
+            name: answer.userName || answer.name || answer.adminId,
             answer: answer.answer
           })),
-          answerToAdd // Thêm câu trả lời mới vào mảng
+          answerToAdd
         ],
         accountId: column.accountId
       }
@@ -72,7 +100,7 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(updatedColumn) // Chỉ gửi các trường cần thiết
+          body: JSON.stringify(updatedColumn)
         }
       )
 
@@ -92,16 +120,17 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
   }
 
   const handleDeleteConfirm = async () => {
-    const questionId = column._id
+    const questionIdDelete = column._id.replace("id-", "")
 
     try {
       const response = await fetch(
-        `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionId}`,
+        `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionIdDelete}`,
         {
-          method: "DELETE",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json"
-          }
+          },
+          body: JSON.stringify({ isDelete: "true" })
         }
       )
 
@@ -109,8 +138,9 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
         throw new Error("Network response was not ok")
       }
 
-      console.log("Question deleted successfully")
-      onDeleteColumn(column._id) // Gọi hàm callback để cập nhật state ở component cha
+      console.log("Question marked as deleted successfully")
+      // Notify parent component about the deletion
+      onDeleteColumn(column._id)
       handleCloseDeleteDialog()
     } catch (error) {
       console.error("There was a problem with the delete operation:", error)
@@ -160,14 +190,16 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
             />
           </Tooltip>
         </Typography>
-        <Box>
-          <Tooltip title="Delete">
-            <DeleteOutlineIcon
-              sx={{ color: "text.primary", cursor: "pointer" }}
-              onClick={handleDeleteClick}
-            />
-          </Tooltip>
-        </Box>
+        {(loggedInUser?.role === "admin" || loggedInUser?.id === column?.userId) ? (
+          <Box>
+            <Tooltip title="Delete">
+              <DeleteOutlineIcon
+                sx={{ color: "text.primary", cursor: "pointer" }}
+                onClick={handleDeleteClick}
+              />
+            </Tooltip>
+          </Box>
+        ) : null}
       </Box>
 
       {/* List of Answers */}
@@ -200,19 +232,16 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           </Button>
         ) : null}
 
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {column?.likes > 0 ? (
-            <>
-              <FavoriteIcon color="error" />
-              <Typography sx={{ ml: 0 }}>{column?.likes}</Typography>
-            </>
-          ) : (
-            <>
-              <FavoriteIcon />
-              <Typography sx={{ ml: 0 }}>{column?.likes}</Typography>
-            </>
-          )}
-        </Box>
+        <Tooltip title="Like">
+          <Box
+            sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+            onClick={handleLikeClick}
+          >
+            <FavoriteIcon color={isLiked ? "error" : "inherit"} />
+            <Typography sx={{ ml: 0 }}>{likes}</Typography>
+          </Box>
+        </Tooltip>
+
       </Box>
 
       {/* Form Add Answer */}

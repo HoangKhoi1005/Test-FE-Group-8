@@ -7,6 +7,7 @@ import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 
 function ListColumns({ columns, loggedInUser, setColumns }) {
+
   const navigate = useNavigate()
   const columnPairs = []
   for (let i = 0; i < columns?.length; i += 2) {
@@ -19,7 +20,7 @@ function ListColumns({ columns, loggedInUser, setColumns }) {
   const [addQuestion, setAddQuestion] = useState(false)
 
   const handleDeleteColumn = (columnId) => {
-    setColumns(prevColumns => prevColumns.filter(col => col._id === columnId))
+    setColumns((prevColumns) => prevColumns.filter((col) => col._id !== columnId))
   }
 
   const transformQuestionData = (question) => {
@@ -37,7 +38,7 @@ function ListColumns({ columns, loggedInUser, setColumns }) {
     console.log("Câu hỏi: ", newQ)
     const questionToAdd = {
       _id: `id-${columns?.length + 1}`,
-      userId: loggedInUser.id, // Sử dụng ID người dùng đã đăng nhập
+      userId: loggedInUser.id,
       questions: newQ,
       likes: 0,
       answers: []

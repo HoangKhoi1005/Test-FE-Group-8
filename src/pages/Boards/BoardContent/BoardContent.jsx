@@ -1,7 +1,16 @@
 import Box from "@mui/material/Box"
 import ListColumns from "./ListColumns/ListColumns"
+import { useEffect, useState } from "react"
 
 function BoardContent({ board, loggedInUser }) {
+
+  const [columns, setColumns] = useState(board?.columns || [])
+  useEffect(() => {
+    if (board?.columns) {
+      setColumns(board.columns)
+    }
+  }, [board])
+
   return (
     <Box
       sx={{
@@ -12,7 +21,7 @@ function BoardContent({ board, loggedInUser }) {
         padding: "10px 0"
       }}
     >
-      <ListColumns columns={board?.columns} loggedInUser={loggedInUser} />
+      <ListColumns columns={columns} loggedInUser={loggedInUser} setColumns={setColumns} />
     </Box>
   )
 }
