@@ -6,7 +6,7 @@ import { useState } from "react"
 import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
 
-function ListColumns({ columns, loggedInUser }) {
+function ListColumns({ columns, loggedInUser, setColumns }) {
   const navigate = useNavigate()
   const columnPairs = []
   for (let i = 0; i < columns?.length; i += 2) {
@@ -17,6 +17,10 @@ function ListColumns({ columns, loggedInUser }) {
     { _id: "", userId: "", questions: "", likes: 0, answers: [] }
   ])
   const [addQuestion, setAddQuestion] = useState(false)
+
+  const handleDeleteColumn = (columnId) => {
+    setColumns(prevColumns => prevColumns.filter(col => col._id === columnId))
+  }
 
   const transformQuestionData = (question) => {
     return {
@@ -111,7 +115,12 @@ function ListColumns({ columns, loggedInUser }) {
             }}
           >
             {pair.map((column) => (
-              <Column key={column.id} column={column} loggedInUser = {loggedInUser} />
+              <Column
+                key={column._id}
+                column={column}
+                loggedInUser={loggedInUser}
+                onDeleteColumn={handleDeleteColumn}
+              />
             ))}
           </Box>
         ))}
