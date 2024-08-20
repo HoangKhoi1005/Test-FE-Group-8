@@ -6,29 +6,29 @@ function BoardContent({ board, loggedInUser, sortOption, valueSearch }) {
   const [columns, setColumns] = useState(board?.columns || []);
 
   useEffect(() => {
-    const filterColumns = () => {
-      if (sortOption === "answered") {
-        return board?.columns.filter(
-          (col) => col.answers.length > 0 && !col.isDelete
-        );
-      } else if (sortOption === "unanswered") {
-        return board?.columns.filter(
-          (col) => col.answers.length === 0 && !col.isDelete
-        );
-      } else {
-        return board?.columns.filter((col) => !col.isDelete);
-      }
-    };
-    const filterColumnsBySearch = () => {
+    const filterAndSortColumns = () => {
+      let filteredColumns = board?.columns.filter((col) => !col.isDelete);
+
       if (valueSearch) {
-        return board?.columns.filter((col) =>
+        filteredColumns = filteredColumns.filter((col) =>
           col.questions.toLowerCase().includes(valueSearch.toLowerCase())
         );
       }
-      return board?.columns;
+
+      if (sortOption === "answered") {
+        filteredColumns = filteredColumns.filter(
+          (col) => col.answers.length > 0
+        );
+      } else if (sortOption === "unanswered") {
+        filteredColumns = filteredColumns.filter(
+          (col) => col.answers.length === 0
+        );
+      }
+
+      return filteredColumns;
     };
-    setColumns(filterColumnsBySearch());
-    // setColumns(filterColumns());
+
+    setColumns(filterAndSortColumns());
   }, [sortOption, board?.columns, valueSearch]);
 
   return (
