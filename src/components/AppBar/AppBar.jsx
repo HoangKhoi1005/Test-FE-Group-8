@@ -1,41 +1,59 @@
-import { useState } from "react"
-import Box from "@mui/material/Box"
-import ModeSelect from "~/components/ModeSelect/ModeSelect"
-import AppsIcon from "@mui/icons-material/Apps"
-import { ReactComponent as TrelloLogo } from "~/assets/logo.svg"
-import SvgIcon from "@mui/material/SvgIcon"
-import Typography from "@mui/material/Typography"
-import Button from "@mui/material/Button"
-import TextField from "@mui/material/TextField"
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone"
-import Badge from "@mui/material/Badge"
-import Tooltip from "@mui/material/Tooltip"
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline"
-import Profiles from "./Menu/Profiles"
-import LibraryAddIcon from "@mui/icons-material/LibraryAdd"
-import CloseIcon from "@mui/icons-material/Close"
-import InputAdornment from "@mui/material/InputAdornment"
-import SearchIcon from "@mui/icons-material/Search"
+import { useState } from "react";
+import Box from "@mui/material/Box";
+import ModeSelect from "~/components/ModeSelect/ModeSelect";
+import AppsIcon from "@mui/icons-material/Apps";
+import { ReactComponent as TrelloLogo } from "~/assets/logo.svg";
+import SvgIcon from "@mui/material/SvgIcon";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import Badge from "@mui/material/Badge";
+import Tooltip from "@mui/material/Tooltip";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import Profiles from "./Menu/Profiles";
+import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
+import CloseIcon from "@mui/icons-material/Close";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
 
-function AppBar({ loggedInUser }) {
-  const [searchValue, setSearchValue] = useState("")
+function AppBar({ loggedInUser, onValueSearch }) {
+  const [searchValue, setSearchValue] = useState("");
+  const handleSearch = (e) => {
+    onValueSearch(e.target.value);
+    setSearchValue(e.target.value);
+    console.log("Giá trị trả về từ thanh search: ", e.target.value);
+  };
   return (
-    <Box sx={{
-      width: "100%",
-      height: (theme) => theme.trello.appBarHeight,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingX: 2,
-      gap: 2,
-      overflowX: "auto",
-      backgroundColor: (theme) => (theme.palette.mode === "dark" ? "#2c3e50" : "#1565c0")
-    }}>
+    <Box
+      sx={{
+        width: "100%",
+        height: (theme) => theme.trello.appBarHeight,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingX: 2,
+        gap: 2,
+        overflowX: "auto",
+        backgroundColor: (theme) =>
+          theme.palette.mode === "dark" ? "#2c3e50" : "#1565c0",
+      }}
+    >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <AppsIcon sx={{ color: "white" }}/>
+        <AppsIcon sx={{ color: "white" }} />
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <SvgIcon component={TrelloLogo} fontSize='large' inheritViewBox sx={{ color: "white" }}/>
-          <Typography variant='span' sx={{ fontSize: "1.2rem", fontWeight: "bold", color: "white" }}>Questions for the Group</Typography>
+          <SvgIcon
+            component={TrelloLogo}
+            fontSize="large"
+            inheritViewBox
+            sx={{ color: "white" }}
+          />
+          <Typography
+            variant="span"
+            sx={{ fontSize: "1.2rem", fontWeight: "bold", color: "white" }}
+          >
+            Questions for the Group
+          </Typography>
         </Box>
 
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
@@ -44,17 +62,15 @@ function AppBar({ loggedInUser }) {
               color: "white",
               border: "none",
               "&:hover": {
-                border: "none"
-              }
+                border: "none",
+              },
             }}
             variant="outlined"
-            startIcon={<LibraryAddIcon/>}
-          >Create
+            startIcon={<LibraryAddIcon />}
+          >
+            Create
           </Button>
-
         </Box>
-
-
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -62,9 +78,8 @@ function AppBar({ loggedInUser }) {
           id="outlined-search"
           label="Search..."
           type="text"
-          size='small'
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          size="small"
+          onChange={handleSearch}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -73,11 +88,13 @@ function AppBar({ loggedInUser }) {
             ),
             endAdornment: (
               <CloseIcon
-                sx={{ color: searchValue ? "white" : "transparent", cursor: searchValue ? "pointer" : "transparent" }}
-                fontSize='small'
-                onClick={() => setSearchValue("")}
+                sx={{
+                  color: searchValue ? "white" : "transparent",
+                  cursor: searchValue ? "pointer" : "transparent",
+                }}
+                fontSize="small"
               />
-            )
+            ),
           }}
           sx={{
             minWidth: "120px",
@@ -88,11 +105,11 @@ function AppBar({ loggedInUser }) {
             "& .MuiOutlinedInput-root": {
               "& fieldset": { borderColor: "white" },
               "&:hover fieldset": { borderColor: "white" },
-              "&.Mui-focused fieldset": { borderColor: "white" }
-            }
+              "&.Mui-focused fieldset": { borderColor: "white" },
+            },
           }}
         />
-        <ModeSelect/>
+        <ModeSelect />
 
         <Tooltip title="Notifications">
           <Badge color="warning" variant="dot" sx={{ cursor: "pointer" }}>
@@ -106,10 +123,10 @@ function AppBar({ loggedInUser }) {
           </Badge>
         </Tooltip>
 
-        <Profiles loggedInUser = {loggedInUser}/>
+        <Profiles loggedInUser={loggedInUser} />
       </Box>
     </Box>
-  )
+  );
 }
 
-export default AppBar
+export default AppBar;
