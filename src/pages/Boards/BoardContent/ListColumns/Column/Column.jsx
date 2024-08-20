@@ -1,136 +1,143 @@
-import { useState, useEffect } from "react"
-import AddCardIcon from "@mui/icons-material/AddCard"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline"
-import Tooltip from "@mui/material/Tooltip"
-import Typography from "@mui/material/Typography"
-import FavoriteIcon from "@mui/icons-material/Favorite"
-import EditIcon from "@mui/icons-material/Edit"
-import styled from "styled-components"
-import Dialog from "@mui/material/Dialog"
-import DialogActions from "@mui/material/DialogActions"
-import DialogContent from "@mui/material/DialogContent"
-import DialogContentText from "@mui/material/DialogContentText"
-import DialogTitle from "@mui/material/DialogTitle"
+import { useState, useEffect } from "react";
+import AddCardIcon from "@mui/icons-material/AddCard";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import EditIcon from "@mui/icons-material/Edit";
+import styled from "styled-components";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import axios from "axios";
 
 function Column({ column, loggedInUser, onDeleteColumn }) {
-  const [showForm, setShowForm] = useState(false)
-  const [newAnswer, setNewAnswer] = useState("")
-  const [likes, setLikes] = useState(column.likes || 0)
-  const [isLiked, setIsLiked] = useState(false)
+  const [showForm, setShowForm] = useState(false);
+  const [newAnswer, setNewAnswer] = useState("");
+  const [likes, setLikes] = useState(column.likes || 0);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
-    const savedLikeState = localStorage.getItem(`liked_${column._id}`)
+    const savedLikeState = localStorage.getItem(`liked_${column._id}`);
     if (savedLikeState === "true") {
-      setIsLiked(true)
+      setIsLiked(true);
     }
-  }, [column._id])
+  }, [column._id]);
 
   const handleLikeClick = async () => {
-    const newIsLiked = !isLiked
-    setIsLiked(newIsLiked)
-    const updatedLikes = newIsLiked ? likes + 1 : likes - 1
-    setLikes(updatedLikes)
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    const updatedLikes = newIsLiked ? likes + 1 : likes - 1;
+    if (updatedLikes >= 0) {
+      setLikes(updatedLikes);
 
-    localStorage.setItem(`liked_${column._id}`, newIsLiked.toString())
+      localStorage.setItem(`liked_${column._id}`, newIsLiked.toString());
 
-    try {
-      const response = await fetch(
-        `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${column._id.replace("id-", "")}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ like: updatedLikes })
+      try {
+        const response = await fetch(
+          `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${column._id.replace(
+            "id-",
+            ""
+          )}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ like: updatedLikes }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-      )
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok")
+        console.log("Likes updated:", updatedLikes);
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
       }
-
-      console.log("Likes updated:", updatedLikes)
-    } catch (error) {
-      console.error("There was a problem with the fetch operation:", error)
+    } else {
+      setIsLiked(!isLiked);
     }
-  }
-
+  };
 
   const handleButtonClick = () => {
-    setShowForm(true)
-  }
+    setShowForm(true);
+  };
 
   const handleCloseForm = () => {
-    setShowForm(false)
-  }
+    setShowForm(false);
+  };
 
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const handleDeleteClick = () => {
-    setOpenDeleteDialog(true)
-  }
+    setOpenDeleteDialog(true);
+  };
 
   const handleCloseDeleteDialog = () => {
-    setOpenDeleteDialog(false)
-  }
+    setOpenDeleteDialog(false);
+  };
 
   const handleAddAnswer = async () => {
     if (!newAnswer.trim()) {
-      alert("Câu trả lời không được để trống!")
-      return
+      alert("Câu trả lời không được để trống!");
+      return;
     }
 
     const answerToAdd = {
       name: loggedInUser.userName,
-      answer: newAnswer
-    }
+      answer: newAnswer,
+    };
 
-    const questionId = column._id.replace("id-", "")
+    const questionId = column._id.replace("id-", "");
 
     try {
       const updatedColumn = {
         questions: column.questions,
         likes: column.likes,
         answers: [
-          ...column.answers.map(answer => ({
+          ...column.answers.map((answer) => ({
             name: answer.userName || answer.name || answer.adminId,
-            answer: answer.answer
+            answer: answer.answer,
           })),
-          answerToAdd
+          answerToAdd,
         ],
-        accountId: column.accountId
-      }
+        accountId: column.accountId,
+      };
 
       const response = await fetch(
         `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionId}`,
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(updatedColumn)
+          body: JSON.stringify(updatedColumn),
         }
-      )
+      );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok")
+        throw new Error("Network response was not ok");
       }
 
-      const data = await response.json()
-      console.log("New answer added:", data)
+      const data = await response.json();
+      console.log("New answer added:", data);
 
-      setShowForm(false)
-      setNewAnswer("")
-      window.location.reload()
+      setShowForm(false);
+      setNewAnswer("");
+      window.location.reload();
     } catch (error) {
-      console.error("There was a problem with the fetch operation:", error)
+      console.error("There was a problem with the fetch operation:", error);
     }
-  }
+  };
 
   const handleDeleteConfirm = async () => {
-    const questionIdDelete = column._id.replace("id-", "")
+    const questionIdDelete = column._id.replace("id-", "");
 
     try {
       const response = await fetch(
@@ -138,25 +145,73 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
         {
           method: "PUT",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ isDelete: "true" })
+          body: JSON.stringify({ isDelete: "true" }),
         }
-      )
+      );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok")
+        throw new Error("Network response was not ok");
       }
 
-      console.log("Question marked as deleted successfully")
+      console.log("Question marked as deleted successfully");
       // Notify parent component about the deletion
-      onDeleteColumn(column._id)
-      handleCloseDeleteDialog()
+      onDeleteColumn(column._id);
+      handleCloseDeleteDialog();
     } catch (error) {
-      console.error("There was a problem with the delete operation:", error)
+      console.error("There was a problem with the delete operation:", error);
     }
-  }
+  };
 
+  const [edit, setEdit] = useState(false);
+
+  const handleEditQuestion = async () => {
+    const questionId = column._id.replace("id-", "");
+    const response = await axios.get(
+      `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionId}`
+    );
+
+    if (localStorage.getItem("userID") === response.data.accountId) {
+      setEdit(!edit);
+    }
+  };
+
+  const handleSubmitEdit = async () => {
+    const questionId = column._id.replace("id-", "");
+    var editQ = document.getElementById("editQuestion").value;
+    if (editQ !== "") {
+      try {
+        const updatedColumn = {
+          questions: editQ,
+          like: 0,
+          answers: [],
+          accountId: column.accountId,
+        };
+
+        const response = await fetch(
+          `https://66be10c274dfc195586e78a9.mockapi.io/api/questions/${questionId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedColumn),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        setEdit(!edit);
+        window.location.reload();
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
+    } else {
+      setEdit(!edit);
+    }
+  };
 
   return (
     <Box
@@ -168,7 +223,7 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
         ml: 2,
         borderRadius: "6px",
         height: "fit-content",
-        mb: 2
+        mb: 2,
       }}
     >
       {/* Box Card Header */}
@@ -177,7 +232,7 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           padding: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
         }}
       >
         <Typography
@@ -185,22 +240,24 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           sx={{
             fontSize: "1rem",
             fontWeight: "bold",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           {column?.questions}
           <Tooltip title="Edit">
             <EditIcon
+              onClick={handleEditQuestion}
               sx={{
                 color: "#95a5a6",
                 cursor: "pointer",
                 fontSize: "large",
-                ml: 1
+                ml: 1,
               }}
             />
           </Tooltip>
         </Typography>
-        {(loggedInUser?.role === "admin" || loggedInUser?.id === column?.userId) ? (
+        {loggedInUser?.role === "admin" ||
+        loggedInUser?.id === column?.userId ? (
           <Box>
             <Tooltip title="Delete">
               <DeleteOutlineIcon
@@ -233,7 +290,7 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           padding: 2,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
         }}
       >
         {loggedInUser?.role === "admin" ? (
@@ -251,7 +308,6 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
             <Typography sx={{ ml: 0 }}>{likes}</Typography>
           </Box>
         </Tooltip>
-
       </Box>
 
       {/* Form Add Answer */}
@@ -282,7 +338,9 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Xác nhận xóa câu hỏi"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Xác nhận xóa câu hỏi"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Bạn có muốn xóa câu hỏi này không?
@@ -295,8 +353,22 @@ function Column({ column, loggedInUser, onDeleteColumn }) {
           </Button>
         </DialogActions>
       </Dialog>
+      {edit && <FormOverlay onClick={() => setEdit(false)} />}
+      {edit && (
+        <FormAddQuestion>
+          <TopForm onClick={() => setEdit(false)}>
+            <b>X</b>
+          </TopForm>
+          <MainForm placeholder="Question?" id="editQuestion">
+            {column.questions}
+          </MainForm>
+          <SubmitQuestion type="submit" onClick={handleSubmitEdit}>
+            Submit
+          </SubmitQuestion>
+        </FormAddQuestion>
+      )}
     </Box>
-  )
+  );
 }
 
 const SubmitQuestion = styled.button`
@@ -329,7 +401,7 @@ const SubmitQuestion = styled.button`
     outline: none;
     box-shadow: 0px 0px 0px 4px rgba(0, 123, 255, 0.5);
   }
-`
+`;
 
 const MainForm = styled.textarea`
   display: block;
@@ -339,7 +411,7 @@ const MainForm = styled.textarea`
   border-radius: 8px;
   margin: 20px 0;
   padding: 12px;
-  font-family: 'Arial', Helvetica, sans-serif;
+  font-family: "Arial", Helvetica, sans-serif;
   font-size: 1rem;
   font-weight: 400;
   border: 1px solid #ccc;
@@ -351,7 +423,7 @@ const MainForm = styled.textarea`
     box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
     outline: none;
   }
-`
+`;
 
 const TopForm = styled.button`
   background-color: transparent;
@@ -371,7 +443,7 @@ const TopForm = styled.button`
   &:active {
     outline: none;
   }
-`
+`;
 
 const FormOverlay = styled.div`
   position: fixed;
@@ -382,7 +454,7 @@ const FormOverlay = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   z-index: 999;
-`
+`;
 
 const FormAddQuestion = styled.div`
   position: fixed;
@@ -407,6 +479,6 @@ const FormAddQuestion = styled.div`
     visibility: hidden;
     transform: translate(-50%, -40%);
   }
-`
+`;
 
-export default Column
+export default Column;
