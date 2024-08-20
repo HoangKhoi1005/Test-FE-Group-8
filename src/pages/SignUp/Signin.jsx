@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, Link } from "react-router-dom";
-import "./LoginStyle.css";
+import "./SigninStyle.css";
 import password_icon from "~/assets/password.png";
 import email_icon from "~/assets/email.png";
+import user_icon from "~/assets/person.png";
 import axios from "axios";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useAuth } from "~/pages/Auth/index";
 
 
-
-const Login = () => {
-  const [action, setAction] = useState("Login");
+const SignUp = () => {
+  const [action, setAction] = useState("Sign Up");
   const [logoutSnackbarOpen, setLogoutSnackbarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
   const { setAuth } = useAuth();
@@ -23,9 +24,9 @@ const Login = () => {
     setIsLoggedIn(false);
   }, []);
 
-  const handleLogin = async () => {
-    if (!name || !password) {
-      alert("Tên và mật khẩu trống, vui lòng nhập!");
+  const handleSignUp = async () => {
+    if (!name || !userName || !password) {
+      alert("Tên, tên người dùng và mật khẩu không được để trống, vui lòng nhập!");
       return;
     }
     try {
@@ -34,28 +35,41 @@ const Login = () => {
       );
       const accounts = response.data;
 
-      // Kiểm tra name và mật khẩu từ trường nhập với dữ liệu từ API
-      const user = accounts.find(
-        (account) => account.name === name && account.password === password
-      );
+      const existingUser = accounts.find((account) => account.name === name);
 
-      if (user) {
+      if (existingUser) {
+        alert("Tài khoản đã tồn tại. Vui lòng chọn tên khác.");
+      } else {
+        const newUser = {
+          name: name,
+          password: password,
+          userName: userName,
+          role: "user",
+        };
+
+        const createResponse = await axios.post(
+          "https://66be10c274dfc195586e78a9.mockapi.io/api/accounts",
+          newUser
+        );
+
         setAuth({
-          id: user.id,
-          userName: user.userName,
-          role: user.role,
+          id: createResponse.data.id,
+          userName: createResponse.data.userName,
+          name: createResponse.data.name,
+          role: createResponse.data.role,
         });
-        localStorage.setItem("userID", user.id);
-        localStorage.setItem("userName", user.userName);
-        localStorage.setItem("role", user.role);
-        localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+        localStorage.setItem("userID", createResponse.data.id);
+        localStorage.setItem("userName", createResponse.data.userName);
+        localStorage.setItem("name", createResponse.data.name);
+        localStorage.setItem("role", createResponse.data.role);
+        localStorage.setItem("loggedInUser", JSON.stringify(createResponse.data));
+
         setLogoutSnackbarOpen(true);
         setTimeout(() => setIsLoggedIn(true), 1500);
-      } else {
-        alert("Tên hoặc mật khẩu không chính xác. Vui lòng thử lại.");
       }
     } catch (error) {
-      console.error("Lỗi khi kiểm tra đăng nhập:", error);
+      console.error("Lỗi khi kiểm tra đăng ký:", error);
     }
   };
 
@@ -83,6 +97,15 @@ const Login = () => {
             />
           </div>
           <div className="input">
+            <img src={user_icon} alt="" />
+            <input
+              type="text"
+              placeholder="Username"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+          <div className="input">
             <img src={password_icon} alt="" />
             <input
               type="password"
@@ -93,13 +116,13 @@ const Login = () => {
           </div>
         </div>
         <div className="submit-container">
-          <button className="submit" onClick={handleLogin}>
-            Log In
+          <button className="submit" onClick={handleSignUp}>
+            Sign In
           </button>
           <button className="submit gray">
-          <Link to="/SignUp">Sign Up</Link>
+          <Link to="/Login">Login</Link>
           </button>
-        </div>
+          </div>
 
         <Snackbar
           open={logoutSnackbarOpen}
@@ -111,7 +134,7 @@ const Login = () => {
             severity="success"
             sx={{ width: "100%" }}
           >
-            Bạn đã đăng nhập thành công!
+            Bạn đã đăng ký thành công!
           </Alert>
         </Snackbar>
       </div>
@@ -119,4 +142,4 @@ const Login = () => {
   }
 };
 
-export default Login;
+export default SignUp;
